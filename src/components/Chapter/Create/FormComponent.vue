@@ -29,7 +29,7 @@
           v-model="chapter.media"
       />
       <ButtonComponent
-
+          @click="onSubmit"
       >
         Отправить
       </ButtonComponent>
@@ -41,6 +41,10 @@
 import InputFieldComponent from "@/components/UI/InputFieldComponent";
 import ButtonComponent from "@/components/UI/ButtonComponent";
 import UploadComponent from "@/components/UI/UploadComponent";
+import RepositoryFactory from "@/services/repository-factory";
+import Chapter from "@/services/classes/Chapter";
+
+const chapterRepository = RepositoryFactory.get('chapter')
 
 export default {
   name: "FormComponent",
@@ -51,15 +55,28 @@ export default {
   },
   data() {
     return {
-      chapter: {
-        volume: null,
-        number: null,
-        name: '',
-        price: null,
-        media: []
+      errors: {},
+      chapter: new Chapter(),
+      loading: false
+    }
+  },
+  methods: {
+    onSubmit() {
+      try {
+        this.loading = true
+        chapterRepository.store(this.chapter)
+
+        this.$route.push({ name: 'manga.index' })
+      } catch (error) {
+        this.errors = error.messages
+      } finally {
+        this.loading = false
       }
     }
   },
+  mounted() {
+    this.chapter.mangaSlug = this.$route.params.mangaSlug
+  }
 }
 </script>
 

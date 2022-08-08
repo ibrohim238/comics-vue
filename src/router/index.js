@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import store from "@/store";
-
 
 const routes = [
   {
@@ -69,23 +67,6 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
-})
-
-// eslint-disable-next-line no-unused-vars
-router.beforeEach((to, from) => {
-  // instead of having to check every route record with
-  // to.matched.some(record => record.meta.requiresAuth)
-  if (to.meta.requiresAuth && !store.getters["auth/loggedIn"]) {
-    // this route requires auth, check if logged in
-    // if not, redirect to login page.
-    return {
-      name: 'login',
-    }
-  } else if (to.meta.requiresGuest && store.getters["auth/loggedIn"]) {
-    return {
-      name: 'home',
-    }
-  }
 })
 
 export default router

@@ -1,23 +1,27 @@
 <template>
   <DefaultLayout>
-    <div class="container mx-auto">
+    <div v-if="! loading" class="container mx-auto">
       <DetailComponent
-          v-show="manga"
           :manga="manga"
       />
       <ChapterListComponent
-          v-show="manga"
           :manga="manga"
       />
+    </div>
+    <div v-else>
+      Загрузка...
     </div>
   </DefaultLayout>
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
 import DefaultLayout from "@/layouts/DefaultLayout"
 import DetailComponent from "@/components/Manga/Show/DetailComponent";
 import ChapterListComponent from "@/components/Manga/Show/ChapterListComponent";
+import Manga from "@/services/classes/Manga";
+import RepositoryFactory from "@/services/repository-factory";
+
+const mangaRepository = RepositoryFactory.get('manga')
 
 export default {
   name: "ShowView",
@@ -26,15 +30,27 @@ export default {
     DetailComponent,
     ChapterListComponent
   },
-  computed: {
-    ...mapGetters('manga', [
-      'manga'
-    ])
+  data() {
+    return {
+      manga: new Manga(),
+      loading: false
+    }
   },
   methods: {
-    ...mapActions('manga', [
-      'get'
-    ])
+    get(slug) {
+      this.loading = true
+      return mangaRepository.show(slug)
+          .then((manga) => {
+            this.manga = manga
+          })
+          .catch(error => {
+            console.log(error);
+            return error;
+          })
+          .finally(() => {
+            this.loading  = false
+          })
+    },
   },
   mounted() {
     this.get(this.$route.params.mangaSlug)

@@ -6,7 +6,7 @@
           <div class="mr-auto">
               <router-link
                   class="text-gray-300 hover:bg-gray-700 hover:text-white py-2 px-4 rounded-md text-sm font-medium"
-                  :to="{ name: 'manga.show', params: { slug: chapter.manga.slug } }"
+                  :to="{ name: 'manga.show', params: { slug: chapter.manga.slug} }"
               >
                   {{ chapter.manga.name }}
               </router-link>
@@ -27,6 +27,7 @@
 
 <script>
 import SelectComponent from "@/components/Layouts/Chapter/SelectComponent";
+import Chapter from "@/services/classes/Chapter";
 
 export default {
   name: "ChapterLayout",
@@ -34,8 +35,8 @@ export default {
     SelectComponent
   },
   props: {
-    chapter: Object
-  },
+    chapter: Chapter
+  }
 }
 </script>
 

@@ -18,7 +18,7 @@
       </CheckboxComponent>
       <Multiselect
           mode="tags"
-          v-model="select"
+          v-model="manga.tags"
           :searchable="true"
           :options="tags"
       />
@@ -37,11 +37,14 @@
 
 <script>
 import Multiselect from "@vueform/multiselect"
-import { mapActions, mapGetters } from "vuex";
 import UploadComponent from "@/components/UI/UploadComponent";
 import InputFieldComponent from "@/components/UI/InputFieldComponent";
 import CheckboxComponent from "@/components/UI/CheckboxComponent";
 import ButtonComponent from "@/components/UI/ButtonComponent";
+import RepositoryFactory from "@/services/repository-factory";
+import Manga from "@/services/classes/Manga";
+
+const mangaRepository = RepositoryFactory.get('manga')
 
 export default {
   name: "FormComponent",
@@ -52,28 +55,62 @@ export default {
     Multiselect,
     InputFieldComponent
   },
-  computed: {
-    ...mapGetters('manga', [
-      'tags',
-      'manga'
-    ]),
-    select() {
-      return this.manga.tags.map(tag => tag.id)
+  data() {
+    return {
+      errors: {},
+      manga: new Manga(),
+      tags: [],
+      loading: false
     }
-
   },
+
   methods: {
-    ...mapActions('manga', [
-      'update',
-      'get',
-      'getTags',
-    ]),
     onSubmit() {
-      this.update(this.manga)
+      try {
+        this.loading = true
+        mangaRepository.update(this.manga)
+
+        this.$router.push({ name: 'manga.show', params: { slug: this.manga.slug } })
+      } catch (errors) {
+        this.errors = errors.message
+      } finally {
+        this.loading = false
+      }
+    },
+    fetchManga(slug) {
+      this.loading = true
+      mangaRepository.show(slug)
+          .then((manga) => {
+            manga.tags = manga.tags.map(tag => tag.id)
+            manga.media = null
+
+            this.manga = manga
+          })
+          .finally(() => {
+            this.loading = false
+          })
+    },
+    getTags() {
+      this.loading = true
+      mangaRepository.getTags()
+          .then((tags) => {
+            this.tags = tags.map(tag => {
+              return {
+                value: tag.id,
+                label: tag.name
+              }
+            })
+          })
+          .catch(error => {
+            console.log(error);
+          })
+          .finally(() => {
+            this.loading = false
+          })
     }
   },
   mounted() {
-    this.get(this.$route.params.mangaSlug)
+    this.fetchManga(this.$route.params.mangaSlug)
     this.getTags()
   }
 }

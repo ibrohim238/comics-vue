@@ -35,25 +35,38 @@
 
 <script>
 import ChapterItemComponent from "@/components/Manga/Show/ChapterItemComponent";
-import { mapActions, mapGetters } from "vuex";
+import Manga from "@/services/classes/Manga";
+import RepositoryFactory from "@/services/repository-factory";
+
+const chapterRepository = RepositoryFactory.get('chapter')
 
 export default {
   name: "ChapterListComponent",
   components: {
     ChapterItemComponent
   },
-  props: [
-    'manga'
-  ],
-  computed: {
-    ...mapGetters('chapter', [
-        'chapters'
-    ])
+  data() {
+    return {
+      chapters: []
+    }
+  },
+  props: {
+    manga: {
+      type: Manga,
+      default: null
+    }
   },
   methods: {
-    ...mapActions('chapter', [
-        'getAll'
-    ])
+    getAll(mangaSlug) {
+      chapterRepository.index(mangaSlug)
+          .then((chapters) => {
+            this.chapters = chapters
+          })
+          .catch(error => {
+            console.log(error);
+            return error;
+          })
+    }
   },
   mounted() {
     this.getAll(this.manga.slug)

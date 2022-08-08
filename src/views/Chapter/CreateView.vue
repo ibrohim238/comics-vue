@@ -16,8 +16,7 @@ export default {
     NavComponent,
     DefaultLayout,
     FormComponent
-  }
-
+  },
 }
 </script>
 

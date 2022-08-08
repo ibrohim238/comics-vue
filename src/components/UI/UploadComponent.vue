@@ -6,7 +6,13 @@
         <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
         <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
       </div>
-      <input ref="input" @change="updateValue" id="dropzone-file" type="file" class="hidden" :multiple="multiple"/>
+      <input
+          @change="updateValue"
+          id="dropzone-file"
+          type="file"
+          class="hidden"
+          :multiple="multiple"
+      />
     </label>
   </div>
 </template>
@@ -14,13 +20,21 @@
 <script>
 export default {
   name: "UploadComponent",
-  props: [
-      'modelValue',
-      'multiple'
-  ],
+  props: {
+    modelValue: [String, Object],
+    multiple: {
+      type: Boolean,
+      default: false
+    }
+  },
   methods: {
     updateValue(e) {
-      this.$emit('update:modelValue', e.target.value);
+      let files = [...e.target.files]
+      if (! this.multiple) {
+         files = files.item(0)
+      }
+
+      this.$emit('update:modelValue', files);
     }
   }
 }

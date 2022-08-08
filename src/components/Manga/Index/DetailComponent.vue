@@ -3,7 +3,7 @@
     <div class="relative">
        <router-link :to="{ name: 'manga.show', params: { mangaSlug: manga.slug } }">
          <div>
-           <img v-if="manga.media" :src="manga.media.src" :alt="manga.name">
+           <img :src="manga.media?.src" :alt="manga.name">
            <h4>{{ manga.name }}</h4>
          </div>
        </router-link>
@@ -12,11 +12,26 @@
 </template>
 
 <script>
+import RepositoryFactory from "@/services/repository-factory";
+
+const mangaRepository = RepositoryFactory.get('manga')
+
 export default {
   name: "DetailComponent",
   props: [
       'manga'
-  ]
+  ],
+  methods: {
+    delete(slug) {
+      mangaRepository.delete(slug)
+          .then(() => {
+
+          })
+          .catch(error => {
+            console.log(error);
+          })
+    },
+  }
 }
 </script>
 

@@ -2,9 +2,12 @@
   <DefaultLayout>
     <NavComponent/>
     <ListComponent
-        v-show="mangas"
+        v-if="! loading"
         :mangas="mangas"
     />
+    <div v-else>
+      Загрузка...
+    </div>
   </DefaultLayout>
 </template>
 
@@ -12,7 +15,9 @@
 import ListComponent from "@/components/Manga/Index/ListComponent";
 import DefaultLayout from "@/layouts/DefaultLayout";
 import NavComponent from "@/components/Manga/Index/NavComponent";
-import {mapActions, mapGetters} from "vuex";
+import RepositoryFactory from "@/services/repository-factory";
+
+const mangaRepository = RepositoryFactory.get('manga')
 
 export default {
   name: "IndexView",
@@ -21,15 +26,27 @@ export default {
     DefaultLayout,
     ListComponent
   },
-  computed: {
-    ...mapGetters('manga', [
-      'mangas'
-    ])
+  data() {
+    return {
+      mangas: [],
+      loading: false
+    }
   },
   methods: {
-    ...mapActions('manga', [
-      'getAll'
-    ]),
+    getAll() {
+      this.loading = true
+      mangaRepository.index()
+          .then((mangas) => {
+            this.mangas = mangas
+          })
+          .catch(error => {
+            console.log(error);
+            return error;
+          })
+          .finally(() => {
+            this.loading = false
+          })
+    },
   },
   mounted() {
     this.getAll()

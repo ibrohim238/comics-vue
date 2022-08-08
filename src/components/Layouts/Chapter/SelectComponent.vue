@@ -19,28 +19,37 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
+import RepositoryFactory from "@/services/repository-factory";
+import Chapter from "@/services/classes/Chapter";
+
+const chapterRepository = RepositoryFactory.get('chapter')
 
 export default {
   name: "SelectComponent",
   props: {
-    chapter: {
-      type: Object,
-      required: true
+    chapter: Chapter
+  },
+  data() {
+    return {
+      chapters: [],
     }
   },
   computed: {
-    ...mapGetters('chapter', [
-        'chapters',
-    ]),
     select() {
-      return this.chapters.find(ch => ch.id === this.chapter.id)
+      return this.chapters.find(chapter => chapter.id === this.chapter.id)
     }
   },
   methods: {
-    ...mapActions('chapter', [
-      'getAll'
-    ]),
+    fetchChapters(slug) {
+      chapterRepository.index(slug)
+          .then(chapters => {
+            this.chapters = chapters
+          })
+          .catch(error => {
+            console.log(error);
+            return error;
+          })
+    },
     changeRoute() {
       this.$router.push({ name: 'chapter.show', params: {
         slug: this.select.manga.slug, id: this.select.id
@@ -48,7 +57,8 @@ export default {
     }
   },
   mounted() {
-    this.getAll(this.chapter.manga.slug)
+    this.fetchChapters(this.chapter.manga.slug)
+    console.log(this.select);
   },
 }
 </script>
