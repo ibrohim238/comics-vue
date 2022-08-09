@@ -58,7 +58,6 @@ export default {
   },
   mounted() {
     this.fetchChapters(this.chapter.manga.slug)
-    console.log(this.select);
   },
 }
 </script>

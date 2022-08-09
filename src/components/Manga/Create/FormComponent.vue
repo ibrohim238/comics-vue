@@ -41,8 +41,9 @@ import UploadComponent from "@/components/UI/UploadComponent";
 import InputFieldComponent from "@/components/UI/InputFieldComponent";
 import CheckboxComponent from "@/components/UI/CheckboxComponent";
 import ButtonComponent from "@/components/UI/ButtonComponent";
-import RepositoryFactory from "@/services/repository-factory";
 import Manga from "@/services/classes/Manga";
+import RepositoryFactory from "@/services/repository-factory";
+
 const mangaRepository = RepositoryFactory.get('manga')
 
 export default {
@@ -63,19 +64,6 @@ export default {
     }
   },
   methods: {
-    onSubmit() {
-      try {
-        this.loading = true
-        mangaRepository.store(this.manga)
-        console.log(this.manga);
-
-        this.$router.push({ name: 'manga.index' })
-      } catch(errors) {
-        this.errors = errors.messages
-      } finally {
-        this.loading = false
-      }
-    },
     getTags() {
       this.loading = true
       mangaRepository.getTags()

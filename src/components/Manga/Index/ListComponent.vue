@@ -15,10 +15,7 @@ export default {
     MangaCardComponent
   },
   props: {
-    mangas: {
-      type: Array,
-      default: []
-    }
+    mangas: Array
   }
 }
 </script>

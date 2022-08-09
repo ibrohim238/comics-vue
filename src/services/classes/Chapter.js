@@ -29,11 +29,14 @@ export default class Chapter {
     }
 
     static getStoreRequest(data) {
-        let formData = new FormData();
-        formData.append('volume', data.volume);
-        formData.append('number', data.number);
-        formData.append('name', data.name);
-        formData.append('price', data.price);
+        let requestBody = {
+            volume: data.volume,
+            number: data.number,
+            name: data.name,
+            price: data.price,
+        }
+
+        let formData = new FormData(requestBody);
         if (data.teamId) {
             formData.append('team_id', data.teamId);
         }

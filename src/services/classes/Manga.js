@@ -28,9 +28,13 @@ export default class Manga {
     }
 
     static getStoreRequest(data) {
-        let formData = new FormData();
-        formData.append('name', data.name);
-        formData.append('description', data.description);
+        let requestBody = {
+            name: data.name,
+            description: data.description
+        }
+
+        let formData = new FormData(requestBody);
+
         data.tags.forEach((value) => formData.append("tags[]", value))
         if(data.media) {
             formData.append('media[]', data.media);
